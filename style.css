@@ -34,9 +34,6 @@
     color: var(--main-color-1);
 }
 
-
-
-
 /* ---------- Website Theme ---------- */
 
 :root {
@@ -189,6 +186,12 @@ header.container{
     gap: 2rem;
 }
 
+.dining-hall-list{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
 .dine-card{
     border-radius: 15px;
     overflow: hidden;
@@ -239,4 +242,32 @@ header.container{
 
 .menu-link:visited {
     color: var(--heading-color);
+}
+
+.menu-card {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 20px;
+    background-color: #f9f9f9;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.menu-card h2,
+.menu-card h3 {
+    margin-top: 0;
+    color: #333;
+}
+
+.menu-card ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.menu-card li {
+    margin-bottom: 5px;
+}
+
+.menu-card strong {
+    font-weight: bold;
 }
