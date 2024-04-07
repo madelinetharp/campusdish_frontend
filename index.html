@@ -7,13 +7,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.8/css/line.css">
-    <title>CampusDish</title>
+    <title>USC Eats</title>
+    <style>
+        /* Your existing CSS styles here */
+
+        /* Additional CSS for menu cards */
+        .menu-card {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: none; /* Initially hide all menu cards */
+        }
+
+        .menu-card h2,
+        .menu-card h3 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .menu-card ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .menu-card li {
+            margin-bottom: 5px;
+        }
+
+        .menu-card strong {
+            font-weight: bold;
+        }
+    </style>
 </head>
 
 <body>
     <header class="hero">
         <div class="container">
-            <a href="#" class="logo">Campus<span>Dish</span></a>
+            <a href="#" class="logo">USC<span>Eats</span></a>
         </div>
     </header>
 
@@ -40,58 +73,69 @@
                 </div>
 
                 <div class="dining-hall-list">
-                    <div class="dine-card">
+                    <!-- Additional "All Menus" card -->
+                    <div class="dine-card" id="all-menus">
+                        <div class="image">
+                            <img src="images/all_menus.jpg" alt="">
+                        </div>
+                        <div class="desc">
+                            <h3>All Menus</h3>
+                            <button class="menu-link" data-location="all-menus">View All Menus</button>
+                        </div>
+                    </div>
+                    <!-- Existing dining hall cards -->
+                    <div class="dine-card" id="GibbesCourtBistro">
                         <div class="image">
                             <img src="images/gibbes.jpg" alt="">
                         </div>
                         <div class="desc">
                             <h3>Gibbes Court Bistro</h3>
-                            <button class="menu-link" data-location="GibbesCourtBistro">Menu</button>
+                            <button class="menu-link" data-location="GibbesCourtBistro">View Menu</button>
                         </div>
                     </div>
-                    <div class="dine-card">
+                    <div class="dine-card" id="ThePavilion">
                         <div class="image">
                             <img src="images/pavil.jpg" alt="">
                         </div>
                         <div class="desc">
                             <h3>The Pavilion</h3>
-                            <button class="menu-link" data-location="ThePavilion">Menu</button>
+                            <button class="menu-link" data-location="ThePavilion">View Menu</button>
                         </div>
                     </div>
-                    <div class="dine-card">
+                    <div class="dine-card" id="GamecockPark">
                         <div class="image">
                             <img src="images/gamecockpark.jpg" alt="">
                         </div>
                         <div class="desc">
                             <h3>Gamecock Park</h3>
-                            <button class="menu-link" data-location="GamecockPark">Menu</button>
+                            <button class="menu-link" data-location="GamecockPark">View Menu</button>
                         </div>
                     </div>
-                    <div class="dine-card">
+                    <div class="dine-card" id="CommunityTable">
                         <div class="image">
                             <img src="images/ctjpg.jpeg" alt="">
                         </div>
                         <div class="desc">
                             <h3>Community Table</h3>
-                            <button class="menu-link" data-location="CommunityTable">Menu</button>
+                            <button class="menu-link" data-location="CommunityTable">View Menu</button>
                         </div>
                     </div>
-                    <div class="dine-card">
+                    <div class="dine-card" id="HoneycombCafe">
                         <div class="image">
                             <img src="images/honey.jpg" alt="">
                         </div>
                         <div class="desc">
                             <h3>Honeycomb Cafe</h3>
-                            <button class="menu-link" data-location="HoneycombCafe">Menu</button>
+                            <button class="menu-link" data-location="HoneycombCafe">View Menu</button>
                         </div>
                     </div>
-                    <div class="dine-card">
+                    <div class="dine-card" id="FreshGreenes">
                         <div class="image">
                             <img src="images/fresh.jpg" alt="">
                         </div>
                         <div class="desc">
                             <h3>Fresh Greenes</h3>
-                            <button class="menu-link" data-location="FreshGreenes">Menu</button>
+                            <button class="menu-link" data-location="FreshGreenes">View Menu</button>
                         </div>
                     </div>
                     <!-- Add more dining halls here -->
@@ -107,13 +151,33 @@
 
             // Function to fetch menu data
             function fetchMenu(location) {
-                fetch(`https://campus-dish.vercel.app/api?location=${location}`)
+                return fetch(`https://campus-dish.vercel.app/api?location=${location}`)
                     .then(response => response.json())
-                    .then(menuData => {
-                        const formattedMenu = getMenuHTML(menuData, location);
-                        menuContainer.innerHTML = formattedMenu;
-                    })
                     .catch(error => console.error(`Error fetching data for ${location}:`, error));
+            }
+
+            // Set to keep track of added locations
+            const addedLocations = new Set();
+
+            // Function to display menu for all dining halls
+            function displayAllMenus() {
+                const menuPromises = [];
+                const locations = ["GibbesCourtBistro", "ThePavilion", "GamecockPark", "CommunityTable", "HoneycombCafe", "FreshGreenes"];
+                locations.forEach(location => {
+                    if (!addedLocations.has(location)) {
+                        menuPromises.push(fetchMenu(location));
+                        addedLocations.add(location); // Add location to the set
+                    }
+                });
+                Promise.all(menuPromises)
+                    .then(menuData => {
+                        menuData.forEach((data, index) => {
+                            const formattedMenu = getMenuHTML(data, locations[index]);
+                            if (formattedMenu.trim() !== "") {
+                                menuContainer.innerHTML += formattedMenu;
+                            }
+                        });
+                    });
             }
 
             // Function to get HTML for menu
@@ -139,27 +203,57 @@
                 return formattedMenu;
             }
 
+            // Event listener for search input
+            searchInput.addEventListener("input", function () {
+                const searchValue = this.value.trim().toLowerCase();
+                const allMenuItems = document.querySelectorAll(".menu-card");
+                allMenuItems.forEach(menuItem => {
+                    const name = menuItem.querySelector('li:first-child').textContent.toLowerCase();
+                    if (name.includes(searchValue) || searchValue === "") { // Include all items if search box is empty
+                        menuItem.style.display = 'block'; // Show matching menu items
+                    } else {
+                        menuItem.style.display = 'none'; // Hide non-matching menu items
+                    }
+                });
+            });
+
+            // Event listener for search form submit
+            const searchForm = document.querySelector('.search');
+            searchForm.addEventListener('submit', function (event) {
+                event.preventDefault();
+                const searchValue = searchInput.value.trim().toLowerCase();
+                const allMenuItems = document.querySelectorAll(".menu-card");
+                allMenuItems.forEach(menuItem => {
+                    const name = menuItem.querySelector('li:first-child').textContent.toLowerCase();
+                    if (name.includes(searchValue) || searchValue === "") { // Include all items if search box is empty
+                        menuItem.style.display = 'block'; // Show matching menu items
+                    } else {
+                        menuItem.style.display = 'none'; // Hide non-matching menu items
+                    }
+                });
+            });
+
+            // Event listener for displaying all menus
+            const allMenusButton = document.querySelector('#all-menus .menu-link');
+            allMenusButton.addEventListener('click', function (event) {
+                event.preventDefault();
+                displayAllMenus();
+            });
+
             // Event listener for menu links
             const menuLinks = document.querySelectorAll(".menu-link");
             menuLinks.forEach(link => {
                 link.addEventListener("click", function (event) {
                     event.preventDefault();
                     const location = this.getAttribute("data-location");
-                    fetchMenu(location);
+                    fetchMenu(location)
+                        .then(menuData => {
+                            const formattedMenu = getMenuHTML(menuData, location);
+                            menuContainer.innerHTML = formattedMenu;
+                        });
                 });
             });
 
-            // Event listener for search input
-            searchInput.addEventListener("input", function () {
-                const searchValue = this.value.trim();
-                if (searchValue.length > 0) {
-                    // Perform search using searchValue
-                    // For simplicity, let's assume searchValue matches location names
-                    fetchMenu(searchValue);
-                } else {
-                    menuContainer.innerHTML = ""; // Clear menu container if search input is empty
-                }
-            });
         });
     </script>
 </body>
