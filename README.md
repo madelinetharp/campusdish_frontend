@@ -1,4 +1,4 @@
-# campusdish_frontend
+# USC Eats - Frontend
 
 ## Backend repo link
 
